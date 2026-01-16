@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Fast-Check</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background: #1e293b; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: none; margin-bottom: 1rem; outline: none; }
+        button { width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #2563eb; }
+        #result { margin-top: 1.5rem; border-top: 1px solid #334155; padding-top: 1rem; }
+        .temp { font-size: 3rem; font-weight: bold; margin: 0.5rem 0; }
+        .desc { text-transform: capitalize; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Weather Pro</h2>
+        <p style="margin-bottom: 1rem; font-size: 0.9rem; color: #94a3b8;">Internship Demo Project</p>
+        <input type="text" id="cityInput" placeholder="Enter City Name...">
+        <button id="searchBtn">Check Weather</button>
+        <div id="result">
+            <p>Search for a city to see the data.</p>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = '8c6792fcae0c82f3d49e23eaae0b3c93'; 
+        const btn = document.getElementById('searchBtn');
+        const result = document.getElementById('result');
+
+        async function fetchWeather() {
+            const city = document.getElementById('cityInput').value;
+            if(!city) return alert("Type a city name");
+
+            result.innerHTML = "Loading...";
+
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
+                const data = await response.json();
+
+                if(data.cod === "404") {
+                    result.innerHTML = "City not found.";
+                    return;
+                }
+
+                result.innerHTML = `
+                    <h3>${data.name}, ${data.sys.country}</h3>
+                    <div class="temp">${Math.round(data.main.temp)}°C</div>
+                    <div class="desc">${data.weather[0].description}</div>
+                    <p>Humidity: ${data.main.humidity}%</p>
+                `;
+            } catch (error) {
+                result.innerHTML = "Error fetching data.";
+            }
+        }
+
+        btn.addEventListener('click', fetchWeather);
+    </script>
+</body>
+</html>
